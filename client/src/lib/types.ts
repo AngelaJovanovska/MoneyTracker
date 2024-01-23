@@ -1,7 +1,11 @@
-import { z } from "zod";
+import { z, ZodType } from "zod";
 
-export const signInSchema = z.object({
-    email: z.string().email(),
+type FormData = {
+    email: string;
+    password: string;
+};
+export const signInSchema: ZodType<FormData> = z.object({
+    email: z.string().min(1).email(),
     password: z.string().min(8, "Password must be at least 8 characters"),
 });
 

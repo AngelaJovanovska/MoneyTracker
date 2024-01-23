@@ -11,7 +11,7 @@ import { RequestWithUserId } from "../../middlewares/types";
 const expenseRouter = express.Router();
 const expenseRepository = ds.getRepository(Expense);
 const userRepository = ds.getRepository(User);
-
+//create expenses
 expenseRouter.post("/expenses", async (req, res) => {
     const userId = (req as RequestWithUserId).userId;
     const expenseCreateModel = new ExpenseCreateRequest(req.body);
@@ -39,6 +39,7 @@ expenseRouter.post("/expenses", async (req, res) => {
 //     .where("user.id = :userId", { userId: userIntId })
 //     // .andWhere("expense.id = :expenseId", { expenseId: expenseIntId })
 //     .getMany();
+//get all expenses
 expenseRouter.get("/expenses", async (req, res) => {
     const userId = (req as RequestWithUserId).userId;
 
@@ -65,7 +66,7 @@ expenseRouter.get("/expenses", async (req, res) => {
         return res.status(500).json({ msg: "db error" });
     }
 });
-
+//get single expenses
 expenseRouter.get("/expenses/:expense_id", async (req, res) => {
     const userId = (req as RequestWithUserId<{ expense_id: string }>).userId;
 
@@ -97,7 +98,7 @@ expenseRouter.get("/expenses/:expense_id", async (req, res) => {
         return res.status(500).json({ msg: "db error" });
     }
 });
-
+//edit expense
 expenseRouter.put("/expenses/:expense_id", async (req, res) => {
     const userId = (req as RequestWithUserId<{ expense_id: string }>).userId;
 

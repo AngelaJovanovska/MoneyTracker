@@ -22,6 +22,8 @@ export async function authenticate(
         (req as RequestWithUserId).userId = payload.userId;
         return await next();
     } catch (err) {
-        return res.status(403).json({ msg: "authenticate error" });
+        return res
+            .status(401)
+            .json({ msg: "authenticate error in middlewares.index.ts" });
     }
 }

@@ -11,11 +11,12 @@ import {
     UserNotFoundException,
 } from "../../exceptions";
 import ds from "../../db";
-import { RequestWithUserId } from "src/middlewares/types";
+import { RequestWithUserId } from "../../middlewares/types";
 
 export const userRouter = express.Router();
 const userRepository = ds.getRepository(User);
 
+//get user information
 userRouter.get("/users/me", async (req, res) => {
     const id = (req as RequestWithUserId).userId;
 
@@ -28,6 +29,7 @@ userRouter.get("/users/me", async (req, res) => {
 
     return res.json(payload).status(200);
 });
+//create user
 userRouter.post("/users", async (req, res) => {
     const userCreateModel = new UserCreateRequest(req.body);
     const { error, messages } = await userCreateModel.validate();
@@ -45,7 +47,7 @@ userRouter.post("/users", async (req, res) => {
     const payload = new UserCreateResponse(user);
     return res.status(201).json(payload);
 });
-
+//get all users
 userRouter.get("/users", async (req, res) => {
     const users = await userRepository.find();
 

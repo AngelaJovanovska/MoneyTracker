@@ -12,7 +12,6 @@ import Register from "./pages/auth/Register";
 import { PrivateRoutes } from "./routes/PrivateRoutes";
 
 function App() {
-    // const navigate = useNavigate();
     const [accessToken, setAccessToken] = useState(
         localStorage.getItem("accessToken")
     );
@@ -71,7 +70,7 @@ function App() {
             })
             .catch((err) => {
                 const error = err as AxiosError;
-                console.log("auth errrrrrrr");
+                console.log("auth error- you are not logged in");
                 console.log(err);
                 if (error.response?.status === 403) {
                     // unauthenticated - accessToken probably expired
@@ -91,8 +90,11 @@ function App() {
                     }
                 >
                     <Route index path="/" element={<Home user={user} />} />
-                    <Route path="/incomes" element={<Incomes />} />
-                    <Route path="/expenses" element={<Expenses />} />
+                    <Route path="/incomes" element={<Incomes user={user} />} />
+                    <Route
+                        path="/expenses"
+                        element={<Expenses user={user} />}
+                    />
                 </Route>
                 <Route path="/login" element={<Login login={login} />} />
                 <Route path="/register" element={<Register />} />

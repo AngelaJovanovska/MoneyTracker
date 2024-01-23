@@ -55,7 +55,7 @@ incomeRouter.get("/incomes", async (req, res) => {
                 .status(404)
                 .json({ msg: "this user has not created any income yet" });
         }
-        return res.status(200).json(income);
+        return res.json(income);
     } catch (err) {
         console.error(err);
         return res.status(500).json({ msg: "db error" });

@@ -2,61 +2,62 @@ import axios from "axios";
 import { useState } from "react";
 import { Button, Container, Link, TextField, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
-
+import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TSignInSchema, signInSchema } from "../../lib/types";
-export interface SignUpFormState {
-    email: string;
-    password: string;
-}
+
+// export interface SignInFormState {
+//     email: string;
+//     password: string;
+// }
 
 export default function Login({ login }: { login: (user: any) => void }) {
-    const [formData, setFormData] = useState<SignUpFormState>({
-        email: "",
-        password: "",
-    });
-
     const {
         register,
         handleSubmit,
-        formState: { errors, isSubmitting },
+        formState: { errors, isSubmitting, touchedFields },
         // reset
     } = useForm<TSignInSchema>({
         resolver: zodResolver(signInSchema),
     });
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData((prevData) => ({ ...prevData, [name]: value }));
-    };
+    // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     const { name, value } = e.target;
+    //     setFormData((prevData) => ({ ...prevData, [name]: value }));
+    // };
+    // const submitData:SubmitHandler<SignInFormState> = (data) => {
+    //     // console.log("itworked,", data);
+    //     // setFormData((prevData) => ({ ...prevData }));
+    //     console.log(data);
+    // };
     let navigate = useNavigate();
 
     const onSubmit = async (data: TSignInSchema) => {
+        console.log("data ", data);
         try {
             const response = await axios.post(
                 "http://localhost:8083/auth/login",
-                formData
+                data
             );
 
             // console.log("success");
             const token = response.data;
             const accessToken = token?.accessToken;
             const refreshToken = token?.refreshToken;
-            console.log(accessToken);
-            console.log(refreshToken);
+
+            console.log("access ", accessToken);
+            console.log("refresh ", refreshToken);
+            console.log(touchedFields);
 
             localStorage.setItem("accessToken", accessToken);
             localStorage.setItem("refreshToken", refreshToken);
 
             login(accessToken);
             navigate("/");
-            // console.log(response.data);
         } catch (error) {
             console.error(error);
         }
     };
-    // console.log(formData);
     return (
         <Container component="main" maxWidth="xs">
             <Typography style={{ marginTop: 13, marginBottom: 2 }}>
@@ -72,7 +73,6 @@ export default function Login({ login }: { login: (user: any) => void }) {
                     {...register("email", { required: "Email is required" })}
                     autoComplete="email"
                     autoFocus
-                    onChange={handleChange}
                 />
                 {errors.email && (
                     <p
@@ -91,7 +91,6 @@ export default function Login({ login }: { login: (user: any) => void }) {
                     {...register("password", {
                         required: "Password is required",
                     })}
-                    onChange={handleChange}
                 />
                 <Button
                     type="submit"

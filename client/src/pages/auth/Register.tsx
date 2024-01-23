@@ -1,27 +1,12 @@
 import axios from "axios";
 import { useState } from "react";
 import { Button, Container, Link, TextField, Typography } from "@mui/material";
-import { FieldValues, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TSignUpSchema, signUpSchema } from "../../lib/types";
-import { red } from "@mui/material/colors";
-export interface SignUpFormState {
-    first_name: string;
-    last_name: string;
-    username: string;
-    email: string;
-    password: string;
-}
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
-    const [formData, setFormData] = useState<SignUpFormState>({
-        first_name: "",
-        last_name: "",
-        username: "",
-        email: "",
-        password: "",
-    });
-
     const {
         register,
         handleSubmit,
@@ -29,22 +14,18 @@ export default function Register() {
     } = useForm<TSignUpSchema>({
         resolver: zodResolver(signUpSchema),
     });
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData((prevData) => ({ ...prevData, [name]: value }));
-    };
-
+    let navigate = useNavigate();
     const onSubmit = async (data: TSignUpSchema) => {
         try {
             const response = await axios.post(
                 "http://localhost:8083/auth/register",
-                formData
+                data
             );
 
             console.log("success");
+
             console.log(response.data);
-            // return navigate("/");
+            return navigate("/login");
         } catch (error) {
             console.error(error);
         }
@@ -65,7 +46,6 @@ export default function Register() {
                     {...register("email", { required: "Email is required" })}
                     autoComplete="email"
                     autoFocus
-                    onChange={handleChange}
                 />
                 {errors.email && (
                     <p
@@ -83,7 +63,6 @@ export default function Register() {
                     })}
                     autoComplete="username"
                     autoFocus
-                    onChange={handleChange}
                 />
                 {errors.username && (
                     <p
@@ -101,7 +80,6 @@ export default function Register() {
                     })}
                     autoComplete="First name"
                     autoFocus
-                    onChange={handleChange}
                 />
                 {errors.first_name && (
                     <p
@@ -119,7 +97,6 @@ export default function Register() {
                     })}
                     autoComplete="last_name"
                     autoFocus
-                    onChange={handleChange}
                 />
                 {errors.last_name && (
                     <p
@@ -142,7 +119,6 @@ export default function Register() {
                     })}
                     autoComplete="password"
                     autoFocus
-                    onChange={handleChange}
                 />
                 {errors.password && (
                     <p

@@ -55,17 +55,15 @@ auth_router.post("/login", async (req, res) => {
     const payload: JWTAccessPayload = { userId: user.id };
 
     const accessToken = await jwt.sign(payload, ACCESS_TOKEN_SECRET, {
-        expiresIn: "15s",
+        expiresIn: "1min",
     });
     const refreshToken = await jwt.sign(payload, REFRESH_TOKEN_SECRET, {
-        expiresIn: "12min",
+        expiresIn: "20min",
     });
     const response = { accessToken, refreshToken };
 
     return res.status(200).json(response);
 });
-
-///
 
 auth_router.post("/refresh", async (req, res) => {
     const refreshToken = req.body["refreshToken"];
@@ -84,14 +82,14 @@ auth_router.post("/refresh", async (req, res) => {
             { userId: decoded.userId },
             ACCESS_TOKEN_SECRET,
             {
-                expiresIn: "15s",
+                expiresIn: "1min",
             }
         );
         return res.status(200).json({ accessToken: accessToken });
     } catch (error) {
         return res
             .status(400)
-            .send("Invalid refresh token.Please log in again");
+            .send("Invalid refresh token. Please log in again");
     }
 });
 export { auth_router as auth };
