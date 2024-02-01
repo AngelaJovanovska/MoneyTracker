@@ -1,12 +1,11 @@
-import React, { Fragment, useEffect, useState } from "react";
-import DataTable from "./DataTable";
-// import api from "../../api";
-import axios from "axios";
-
-import { AxiosError } from "axios";
+import { Fragment, useEffect, useState } from "react";
+import DataTable from "../../components/DataTable";
+import { UserT } from "../../App";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
-    user: any;
+    user: UserT | null;
 };
 interface IncomesProps {
     id: number;
@@ -18,27 +17,25 @@ interface IncomesProps {
 
 export default function Incomes({ user }: Props) {
     const [incomes, setIncomes] = useState<IncomesProps[]>([]);
+    const axiosPrivate = useAxiosPrivate();
+    let navigate = useNavigate();
 
     useEffect(() => {
         const getIncomes = async () => {
             try {
-                const token = localStorage.getItem("accessToken");
-                const response = await fetch(
-                    "http://localhost:8083/api/incomes",
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
-                );
-                const data = await response.json();
-                setIncomes(data);
+                const response = await axiosPrivate.get("/incomes");
+                console.log(response.data);
+                console.log("pomina");
+                setIncomes(response.data);
             } catch (error) {
                 console.log("errrir cathcing data", error);
+                navigate("/login");
             }
         };
+
         getIncomes();
-    }, []);
+    }, [axiosPrivate, navigate]);
+
     console.log(incomes);
     return (
         <Fragment>
@@ -62,6 +59,10 @@ export default function Incomes({ user }: Props) {
                     ))}
                 </tbody>
             </table>
+            <p>
+                hello this are {user?.username ?? "not logged in"} created
+                expenses!
+            </p>
             <DataTable data={incomes} />
         </Fragment>
     );

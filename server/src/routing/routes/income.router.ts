@@ -10,7 +10,7 @@ import { RequestWithUserId } from "../../middlewares/types";
 const incomeRouter = express.Router();
 const incomeRepository = ds.getRepository(Income);
 const userRepository = ds.getRepository(User);
-
+//create
 incomeRouter.post("/incomes", async (req, res) => {
     const userId = (req as RequestWithUserId).userId;
     const incomeCreateModel = new IncomeCreateRequest(req.body);
@@ -33,7 +33,7 @@ incomeRouter.post("/incomes", async (req, res) => {
         return res.status(500).json({ msg: "db error" });
     }
 });
-
+//get all incomes
 incomeRouter.get("/incomes", async (req, res) => {
     const userId = (req as RequestWithUserId).userId;
 
@@ -61,7 +61,7 @@ incomeRouter.get("/incomes", async (req, res) => {
         return res.status(500).json({ msg: "db error" });
     }
 });
-
+//get a single income
 incomeRouter.get("/incomes/:income_id", async (req, res) => {
     const userId = (req as RequestWithUserId<{ income_id: string }>).userId;
 
@@ -93,6 +93,7 @@ incomeRouter.get("/incomes/:income_id", async (req, res) => {
         return res.status(500).json({ msg: "db error" });
     }
 });
+//edit a single income
 incomeRouter.put("/users/:user_id/incomes/:income_id", async (req, res) => {
     const { user_id, income_id } = req.params;
     const userIntId = parseInt(user_id, 10);
@@ -122,6 +123,41 @@ incomeRouter.put("/users/:user_id/incomes/:income_id", async (req, res) => {
             .execute();
 
         return res.status(200).json({ msg: "updated" });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ msg: "db error" });
+    }
+});
+//delete an income
+incomeRouter.delete("/incomes/:income_id", async (req, res) => {
+    const userId = (req as RequestWithUserId<{ income_id: string }>).userId;
+
+    const { income_id } = req.params;
+    const incomeIntId = parseInt(income_id, 10);
+
+    const user = await userRepository.findOne({
+        where: { id: userId },
+    });
+    // console.log(user);
+    if (!user) {
+        return res.json(new UserNotFoundException());
+    }
+    const income = await ds
+        .getRepository(Income)
+        .createQueryBuilder("income")
+        .innerJoin("income.user", "user")
+        .where("user.id = :userId", { userId: userId })
+        .andWhere("income.id = :incomeId", { incomeId: incomeIntId })
+        .getOne();
+    try {
+        if (!income) {
+            return res
+                .status(204)
+                .json({ msg: "income not found with that id" });
+        } else {
+            incomeRepository.delete(income.id);
+            return res.status(200).json({ msg: "income deleted" });
+        }
     } catch (err) {
         console.error(err);
         return res.status(500).json({ msg: "db error" });

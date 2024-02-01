@@ -1,8 +1,11 @@
-import React, { Fragment, useEffect, useState } from "react";
-import DataTable from "./DataTable";
+import { Fragment, useEffect, useState } from "react";
+import DataTable from "../../components/DataTable";
+import { UserT } from "../../App";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
-    user: any;
+    user: UserT | null;
 };
 interface ExpensesProps {
     id: number;
@@ -14,50 +17,29 @@ interface ExpensesProps {
 
 export default function Expenses({ user }: Props) {
     const [expenses, setExpenses] = useState<ExpensesProps[]>([]);
-
+    const axiosPrivate = useAxiosPrivate();
+    let navigate = useNavigate();
     useEffect(() => {
         const getExpenses = async () => {
             try {
-                const token = localStorage.getItem("accessToken");
-                const response = await fetch(
-                    "http://localhost:8083/api/expenses",
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
-                );
-                const data = await response.json();
-                setExpenses(data);
-            } catch (err) {
-                console.error("Error catching data ", err);
+                const response = await axiosPrivate.get("/expenses");
+                console.log(response.data);
+                console.log("pomina");
+                setExpenses(response.data);
+            } catch (error) {
+                console.error("Error catching data ", error);
+                navigate("/login");
             }
         };
         getExpenses();
-    }, []);
+    }, [axiosPrivate, navigate]);
     console.log(expenses);
     return (
         <Fragment>
-            {/* <table className="table">
-                <thead>
-                    <tr>
-                        <th>Amount</th>
-                        <th>Created at</th>
-                        <th>Description</th>
-                        <th>Type</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {expenses.map((expense) => (
-                        <tr key={expense.id}>
-                            <td>{expense.amount}</td>
-                            <td>{expense.created_at}</td>
-                            <td>{expense.description}</td>
-                            <td>{expense.type}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table> */}
+            <p>
+                hello this are {user?.username ?? "not logged in"} created
+                expenses!
+            </p>
             <DataTable data={expenses} />
         </Fragment>
     );

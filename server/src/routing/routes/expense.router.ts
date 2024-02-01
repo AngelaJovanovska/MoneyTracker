@@ -11,7 +11,7 @@ import { RequestWithUserId } from "../../middlewares/types";
 const expenseRouter = express.Router();
 const expenseRepository = ds.getRepository(Expense);
 const userRepository = ds.getRepository(User);
-//create expenses
+//create expense
 expenseRouter.post("/expenses", async (req, res) => {
     const userId = (req as RequestWithUserId).userId;
     const expenseCreateModel = new ExpenseCreateRequest(req.body);
@@ -39,6 +39,7 @@ expenseRouter.post("/expenses", async (req, res) => {
 //     .where("user.id = :userId", { userId: userIntId })
 //     // .andWhere("expense.id = :expenseId", { expenseId: expenseIntId })
 //     .getMany();
+
 //get all expenses
 expenseRouter.get("/expenses", async (req, res) => {
     const userId = (req as RequestWithUserId).userId;
@@ -66,6 +67,7 @@ expenseRouter.get("/expenses", async (req, res) => {
         return res.status(500).json({ msg: "db error" });
     }
 });
+
 //get single expenses
 expenseRouter.get("/expenses/:expense_id", async (req, res) => {
     const userId = (req as RequestWithUserId<{ expense_id: string }>).userId;
@@ -134,4 +136,40 @@ expenseRouter.put("/expenses/:expense_id", async (req, res) => {
         return res.status(500).json({ msg: "db error" });
     }
 });
+//delete an expense
+expenseRouter.delete("/expenses/:expense_id", async (req, res) => {
+    const userId = (req as RequestWithUserId<{ expense_id: string }>).userId;
+
+    const { expense_id } = req.params;
+    const expenseIntId = parseInt(expense_id, 10);
+
+    const user = await userRepository.findOne({
+        where: { id: userId },
+    });
+    // console.log(user);
+    if (!user) {
+        return res.json(new UserNotFoundException());
+    }
+    const expense = await ds
+        .getRepository(Expense)
+        .createQueryBuilder("expense")
+        .innerJoin("expense.user", "user")
+        .where("user.id = :userId", { userId: userId })
+        .andWhere("expense.id = :expenseId", { expenseId: expenseIntId })
+        .getOne();
+    try {
+        if (!expense) {
+            return res
+                .status(204)
+                .json({ msg: "expense not found with that id" });
+        } else {
+            expenseRepository.delete(expense.id);
+            return res.status(200).json({ msg: "expense deleted" });
+        }
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ msg: "db error" });
+    }
+});
+
 export { expenseRouter as expensesRouter };

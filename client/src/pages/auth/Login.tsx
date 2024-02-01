@@ -21,15 +21,6 @@ export default function Login({ login }: { login: (user: any) => void }) {
         resolver: zodResolver(signInSchema),
     });
 
-    // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     const { name, value } = e.target;
-    //     setFormData((prevData) => ({ ...prevData, [name]: value }));
-    // };
-    // const submitData:SubmitHandler<SignInFormState> = (data) => {
-    //     // console.log("itworked,", data);
-    //     // setFormData((prevData) => ({ ...prevData }));
-    //     console.log(data);
-    // };
     let navigate = useNavigate();
 
     const onSubmit = async (data: TSignInSchema) => {

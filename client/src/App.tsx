@@ -2,20 +2,23 @@ import Box from "@mui/material/Box";
 import axios, { AxiosError } from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
-import "./App.css";
-import Navbar from "./components/Navbar";
 import Expenses from "./pages/app/Expenses";
 import Home from "./pages/app/Home";
 import Incomes from "./pages/app/Incomes";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import { PrivateRoutes } from "./routes/PrivateRoutes";
+import Navbar from "./components/Navbar";
 
+export type UserT = {
+    id: number;
+    username: string;
+};
 function App() {
     const [accessToken, setAccessToken] = useState(
         localStorage.getItem("accessToken")
     );
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState<UserT | null>(null);
 
     function login(accessToken: any) {
         localStorage.setItem("accessToken", accessToken);
@@ -80,7 +83,7 @@ function App() {
     }, [accessToken, refresh]);
     return (
         <Box width={"400px"} sx={{ width: { xl: "1448px" } }} m={"auto "}>
-            <Navbar user={user || accessToken} logout={logout} />
+            <Navbar user={user} logout={logout} />
             <Routes>
                 <Route
                     element={

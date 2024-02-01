@@ -47,7 +47,7 @@ auth_router.post("/login", async (req, res) => {
     const isSame = await bcrypt.compare(loginUser.password, user.password); //hash(loginUser.password, 10);
 
     if (!isSame) {
-        return res.status(400).json({
+        return res.status(401).json({
             msg: "email or password not correct//invalid credentials",
         });
     }
@@ -55,10 +55,10 @@ auth_router.post("/login", async (req, res) => {
     const payload: JWTAccessPayload = { userId: user.id };
 
     const accessToken = await jwt.sign(payload, ACCESS_TOKEN_SECRET, {
-        expiresIn: "1min",
+        expiresIn: "20min",
     });
     const refreshToken = await jwt.sign(payload, REFRESH_TOKEN_SECRET, {
-        expiresIn: "20min",
+        expiresIn: "30min",
     });
     const response = { accessToken, refreshToken };
 

@@ -23,7 +23,7 @@ export async function authenticate(
         return await next();
     } catch (err) {
         return res
-            .status(401)
+            .status(403)
             .json({ msg: "authenticate error in middlewares.index.ts" });
     }
 }

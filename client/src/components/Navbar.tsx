@@ -1,22 +1,27 @@
-import React from "react";
-
 import LoginIcon from "@mui/icons-material/Login";
 import { Button, Link as MUILink, Stack } from "@mui/material";
 import { Link } from "react-router-dom";
+import { UserT } from "../App";
 
-const Navbar = ({ user, logout }: { user: any; logout: () => void }) => {
+const Navbar = ({
+    user,
+    logout,
+}: {
+    user: UserT | null;
+    logout: () => void;
+}) => {
     return (
         <Stack
             direction={{ xs: "column", sm: "row" }}
-            gap="10px"
-            fontFamily="sans-serif"
+            gap="20px"
+            fontFamily="monospace"
             fontSize={{ xs: "18px", sm: "24px" }}
-            display="ruby"
+            display="flex"
             alignItems="center"
-            justifyContent={{ xs: "center", sm: "space-around" }}
+            justifyContent={{ xs: "center", sm: "space-between" }}
             sx={{
                 mt: { xs: "10px", sm: "12px" },
-                px: "10px",
+                px: "20px",
                 marginRight: { xs: "0", sm: "100px" },
             }}
         >
