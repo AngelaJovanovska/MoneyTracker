@@ -162,6 +162,7 @@ expenseRouter.delete("/expenses/:expense_id", async (req, res) => {
         .where("user.id = :userId", { userId: userId })
         .andWhere("expense.id = :expenseId", { expenseId: expenseIntId })
         .getOne();
+
     try {
         if (!expense) {
             return res
