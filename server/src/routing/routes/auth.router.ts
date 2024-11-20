@@ -26,7 +26,7 @@ auth_router.post("/register", async (req, res) => {
         await userRepository.save(user);
     } catch (err) {
         console.error(err);
-        return res.status(400).json({ msg: "db error" });
+        return res.status(404).json({ msg: "db error" });
     }
     const payload = new UserCreateResponse(user);
     return res.status(201).json(payload);
@@ -55,10 +55,10 @@ auth_router.post("/login", async (req, res) => {
     const payload: JWTAccessPayload = { userId: user.id };
 
     const accessToken = await jwt.sign(payload, ACCESS_TOKEN_SECRET, {
-        expiresIn: "20min",
+        expiresIn: "5min",
     });
     const refreshToken = await jwt.sign(payload, REFRESH_TOKEN_SECRET, {
-        expiresIn: "30min",
+        expiresIn: "12min",
     });
     const response = { accessToken, refreshToken };
 
@@ -82,7 +82,7 @@ auth_router.post("/refresh", async (req, res) => {
             { userId: decoded.userId },
             ACCESS_TOKEN_SECRET,
             {
-                expiresIn: "1min",
+                expiresIn: "5min",
             }
         );
         return res.status(200).json({ accessToken: accessToken });

@@ -6,13 +6,13 @@ import {
     TableHead,
     TableRow,
     Paper,
+    Button,
 } from "@mui/material";
-import { FC } from "react";
 
 interface Row {
-    id: number;
+    id?: number;
     amount: number;
-    created_at: string;
+    created_at?: string;
     description: string;
     type: string;
 }
@@ -21,7 +21,7 @@ interface DataTableProps {
     data: Row[];
 }
 
-const DataTable: FC<DataTableProps> = ({ data }) => {
+export default function DataTable({ data }: DataTableProps) {
     return (
         <TableContainer component={Paper}>
             <Table>
@@ -35,12 +35,16 @@ const DataTable: FC<DataTableProps> = ({ data }) => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {data.map((row) => (
-                        <TableRow key={row.id}>
+                    {data.map((row, index) => (
+                        <TableRow key={index}>
                             <TableCell>{row.amount}</TableCell>
                             <TableCell>{row.created_at}</TableCell>
                             <TableCell>{row.description}</TableCell>
                             <TableCell>{row.type}</TableCell>
+                            <TableCell>
+                                <Button>Edit</Button>
+                                <Button>Delete</Button>
+                            </TableCell>
                             <TableCell></TableCell>
                         </TableRow>
                     ))}
@@ -48,6 +52,4 @@ const DataTable: FC<DataTableProps> = ({ data }) => {
             </Table>
         </TableContainer>
     );
-};
-
-export default DataTable;
+}

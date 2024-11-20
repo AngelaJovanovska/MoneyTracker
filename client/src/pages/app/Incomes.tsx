@@ -3,14 +3,15 @@ import DataTable from "../../components/DataTable";
 import { UserT } from "../../App";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { useNavigate } from "react-router-dom";
+import AddForm from "../../components/AddForm";
 
 type Props = {
     user: UserT | null;
 };
-interface IncomesProps {
-    id: number;
+export interface IncomesProps {
+    // id?: number;
     amount: number;
-    created_at: string;
+    created_at?: string;
     description: string;
     type: string;
 }
@@ -19,16 +20,19 @@ export default function Incomes({ user }: Props) {
     const [incomes, setIncomes] = useState<IncomesProps[]>([]);
     const axiosPrivate = useAxiosPrivate();
     let navigate = useNavigate();
+    const addIncome = (newIncome: IncomesProps) => {
+        setIncomes([...incomes, newIncome]);
+    };
 
     useEffect(() => {
         const getIncomes = async () => {
             try {
                 const response = await axiosPrivate.get("/incomes");
                 console.log(response.data);
-                console.log("pomina");
+                console.log("pomina-momentalno incomes.tsx");
                 setIncomes(response.data);
             } catch (error) {
-                console.log("errrir cathcing data", error);
+                console.log("error catching data", error);
                 navigate("/login");
             }
         };
@@ -36,33 +40,14 @@ export default function Incomes({ user }: Props) {
         getIncomes();
     }, [axiosPrivate, navigate]);
 
-    console.log(incomes);
+    // console.log(incomes);
     return (
         <Fragment>
-            <table className="table">
-                <thead>
-                    <tr>
-                        <th>Amount</th>
-                        <th>Created at</th>
-                        <th>Description</th>
-                        <th>Type</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {incomes.map((income) => (
-                        <tr key={income.id}>
-                            <td>{income.amount}</td>
-                            <td>{income.created_at}</td>
-                            <td>{income.description}</td>
-                            <td>{income.type}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
             <p>
-                hello this are {user?.username ?? "not logged in"} created
-                expenses!
+                Hi this incomes are created by the user:{" "}
+                {user?.username ?? "not logged in"}!
             </p>
+            <AddForm onAddIncome={addIncome} />
             <DataTable data={incomes} />
         </Fragment>
     );

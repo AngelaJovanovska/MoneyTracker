@@ -40,7 +40,7 @@ export default function Expenses({ user }: Props) {
                 hello this are {user?.username ?? "not logged in"} created
                 expenses!
             </p>
-            <DataTable data={expenses} />
+            {/* <DataTable data={expenses} /> */}
         </Fragment>
     );
 }

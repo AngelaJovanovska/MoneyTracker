@@ -3,18 +3,18 @@ import { Button, Link as MUILink, Stack } from "@mui/material";
 import { Link } from "react-router-dom";
 import { UserT } from "../App";
 
-const Navbar = ({
+export default function Navbar({
     user,
     logout,
 }: {
     user: UserT | null;
     logout: () => void;
-}) => {
+}) {
     return (
         <Stack
             direction={{ xs: "column", sm: "row" }}
             gap="20px"
-            fontFamily="monospace"
+            fontFamily="Gill Sans"
             fontSize={{ xs: "18px", sm: "24px" }}
             display="flex"
             alignItems="center"
@@ -75,6 +75,6 @@ const Navbar = ({
             )}
         </Stack>
     );
-};
+}
 
-export default Navbar;
+// export default Navbar;
