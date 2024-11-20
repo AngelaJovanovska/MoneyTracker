@@ -32,8 +32,6 @@ auth_router.post("/register", async (req, res) => {
     return res.status(201).json(payload);
 });
 
-//login
-
 auth_router.post("/login", async (req, res) => {
     const loginUser = new UserLoginRequest(req.body);
 
@@ -57,9 +55,11 @@ auth_router.post("/login", async (req, res) => {
     const accessToken = await jwt.sign(payload, ACCESS_TOKEN_SECRET, {
         expiresIn: "5min",
     });
+
     const refreshToken = await jwt.sign(payload, REFRESH_TOKEN_SECRET, {
         expiresIn: "12min",
     });
+
     const response = { accessToken, refreshToken };
 
     return res.status(200).json(response);
@@ -67,6 +67,7 @@ auth_router.post("/login", async (req, res) => {
 
 auth_router.post("/refresh", async (req, res) => {
     const refreshToken = req.body["refreshToken"];
+
     if (!refreshToken) {
         return res
             .status(401)
@@ -78,6 +79,7 @@ auth_router.post("/refresh", async (req, res) => {
             refreshToken,
             REFRESH_TOKEN_SECRET
         ) as JWTAccessPayload;
+
         const accessToken = jwt.sign(
             { userId: decoded.userId },
             ACCESS_TOKEN_SECRET,
@@ -85,6 +87,7 @@ auth_router.post("/refresh", async (req, res) => {
                 expiresIn: "5min",
             }
         );
+
         return res.status(200).json({ accessToken: accessToken });
     } catch (error) {
         return res

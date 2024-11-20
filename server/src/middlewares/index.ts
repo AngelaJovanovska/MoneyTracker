@@ -20,6 +20,7 @@ export async function authenticate(
         )) as JWTAccessPayload;
 
         (req as RequestWithUserId).userId = payload.userId;
+
         return await next();
     } catch (err) {
         return res

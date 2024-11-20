@@ -11,7 +11,7 @@ import { RequestWithUserId } from "../../middlewares/types";
 const expenseRouter = express.Router();
 const expenseRepository = ds.getRepository(Expense);
 const userRepository = ds.getRepository(User);
-//create expense
+
 expenseRouter.post("/expenses", async (req, res) => {
     const userId = (req as RequestWithUserId).userId;
     const expenseCreateModel = new ExpenseCreateRequest(req.body);
@@ -21,8 +21,11 @@ expenseRouter.post("/expenses", async (req, res) => {
     if (!user) {
         return res.json(new UserNotFoundException());
     }
+
     const expense = expenseCreateModel.createExpense();
+
     expense.user = user;
+
     try {
         await expenseRepository.save(expense);
         const payload = new ExpenseCreateResponse(expense);
@@ -40,14 +43,15 @@ expenseRouter.post("/expenses", async (req, res) => {
 //     // .andWhere("expense.id = :expenseId", { expenseId: expenseIntId })
 //     .getMany();
 
-//get all expenses
 expenseRouter.get("/expenses", async (req, res) => {
     const userId = (req as RequestWithUserId).userId;
 
     const user = await userRepository.findOne({ where: { id: userId } });
+
     if (!user) {
         return res.json(new UserNotFoundException());
     }
+
     try {
         const expense = await ds
             .getRepository(Expense)
@@ -68,7 +72,6 @@ expenseRouter.get("/expenses", async (req, res) => {
     }
 });
 
-//get single expenses
 expenseRouter.get("/expenses/:expense_id", async (req, res) => {
     const userId = (req as RequestWithUserId<{ expense_id: string }>).userId;
 
@@ -100,7 +103,7 @@ expenseRouter.get("/expenses/:expense_id", async (req, res) => {
         return res.status(500).json({ msg: "db error" });
     }
 });
-//edit expense
+
 expenseRouter.put("/expenses/:expense_id", async (req, res) => {
     const userId = (req as RequestWithUserId<{ expense_id: string }>).userId;
 
@@ -114,6 +117,7 @@ expenseRouter.put("/expenses/:expense_id", async (req, res) => {
         where: { id: userId },
     });
     // console.log(user);
+
     if (!user) {
         return res.json(new UserNotFoundException());
     }
@@ -136,7 +140,7 @@ expenseRouter.put("/expenses/:expense_id", async (req, res) => {
         return res.status(500).json({ msg: "db error" });
     }
 });
-//delete an expense
+
 expenseRouter.delete("/expenses/:expense_id", async (req, res) => {
     const userId = (req as RequestWithUserId<{ expense_id: string }>).userId;
 
@@ -150,6 +154,7 @@ expenseRouter.delete("/expenses/:expense_id", async (req, res) => {
     if (!user) {
         return res.json(new UserNotFoundException());
     }
+
     const expense = await ds
         .getRepository(Expense)
         .createQueryBuilder("expense")
